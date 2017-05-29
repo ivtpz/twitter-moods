@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  div {
+    width: 50px;
+    height: 50px;
+  }
+
+  #d3root {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .states {}
+</style>
+
+<body>
+  <script src="//d3js.org/d3.v4.min.js" charset="utf-8"></script>
+  <script src="https://unpkg.com/topojson@3">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+  <!--<canvas></canvas>
+  <div id="d3root"></div>
+  <script src="./bundle.js"></script>-->
+  <svg width="1260" height="660">
+    <defs>
+      <pattern id="green" x="0" y="0" width="1" height="1">
+        <image xlink:href="./images/greens.jpg" width="200" height="200" />
+      </pattern>
+    </defs>
+    <defs>
+      <pattern id="red" x="0" y="0" width="1" height="1">
+        <image xlink:href="./images/reds.jpg" width="200" height="200" />
+      </pattern>
+    </defs>
+    <defs>
+      <pattern id="blue" x="0" y="0" width="1" height="1">
+        <image xlink:href="./images/blues.jpg" width="200" height="200" />
+      </pattern>
+    </defs>
+    <defs>
+      <pattern id="grey" x="0" y="0" width="1" height="1">
+        <image xlink:href="./images/grey.jpg" width="200" height="200" />
+      </pattern>
+    </defs>
+  </svg>
+  <script>
+    var svg = d3.select("svg");
+
+    var color = d3.scaleOrdinal(d3.schemeCategory20b);
+
+    var path = d3.geoPath();
+    d3.json("./topography/us-quant.json", function (error, us) {
+      if (error) throw error;
+      const states = svg.append("g")
+        .attr("class", "states")
+        .selectAll("path")
+        .data(topojson.feature(us, us.objects.states).features)
+        .enter()
+
+      function getCoor(i, coors) {
+        return coors.length === 2 ? coors[i] : coors.map(getCoor.bind(null, i))
+      }
+
+      function getRange(arr) {
+        return d3.max(arr) - d3.min(arr);
+      }
+
+      var fallback = './images/grey.jpg';
+
+      function getRandBackground() {
+        const i = Math.floor(Math.random() * 4);
+        return backgrounds[i];
+      }
+
+      function ImageExists(url) {
+        var img = new Image();
+        img.src = url;
+        let i = 0;
+        let height = 0;
+        while (!height && i < 60) {
+          height = img.height;
+          i++;
+        }
+        console.log(img.src.slice(10), height)
+        return !!height;
+      }
+
+      states.each(function (d, i) {
+        //console.log(d.properties)
+        if (d.geometry) {
+          const ps = _.flattenDeep(d.geometry.coordinates)
+          const xs = ps.filter(function (__, i) {
+            return !(i % 2)
+          });
+          const ys = ps.filter(function (__, i) {
+            return (i % 2)
+          });
+          const width = Math.ceil(getRange(xs));
+          const height = Math.ceil(getRange(ys));
+          const size = Math.max(width, height);
+          stateSizes[d.properties.STUSPS] = [width, height];
+          console.log('appending def for ' + d.properties.STUSPS)
+          const pat = svg.append('defs')
+            .selectAll('pattern')
+            .data([d])
+            .enter().append('pattern')
+            .attr('id', d.properties.STUSPS)
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', 1)
+            .attr('height', 1)
+          pat.append('image')
+            .attr('xlink:href', d => {
+              const url = `./images/${d.properties.STUSPS}.jpg`;
+              return ImageExists(url) ?
+                url : fallback;
+            })
+        }
+      })
+console.log(JSON.stringify(stateSizes))
+      states.append("path")
+        .attr("d", path)
+        .attr("fill", function (d) {
+          return `url(#${d.properties.STUSPS})`
+        })
+
+    });
+  </script>
+</body>
+
+</html>
