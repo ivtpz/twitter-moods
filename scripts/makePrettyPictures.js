@@ -1,4 +1,7 @@
+#! /usr/bin/env node
+
 const PythonShell = require("python-shell");
+const fs = require("fs");
 const sentimentData = require("../data/stateSentimentData.json");
 const imageSizes = require("../data/stateImageSizes.json");
 
@@ -34,6 +37,8 @@ const runProg = () => {
       scriptPath: "./",
       args: JSON.stringify(pictureData)
     };
+
+    console.log("Making image for " + states[i])
 
     PythonShell.run("states.py", options, (err, res) => {
       console.log('err: ', err);

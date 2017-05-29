@@ -83,7 +83,7 @@ def makeAndSaveImage(data):
         #unusedpixels.remove(closestFree)
         loaded[closestFree[0],closestFree[1]] = p
 
-    newim.save('images/'+data['name']+'.jpg')
+    newim.save('../public/images/'+data['name']+'.jpg')
 
 
 # In[11]:
