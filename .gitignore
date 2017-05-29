@@ -1,6 +1,7 @@
 node_modules
 config/*
-images/*
-topography/*
-bundle.js
+public/images/*
+public/topography/*
+public/bundle.js
 data/*
+!data/majorUSCities.js
