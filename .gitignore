@@ -4,4 +4,5 @@ public/images/*
 public/topography/*
 public/bundle.js
 data/*
+bundle.js
 !data/majorUSCities.js
