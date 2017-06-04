@@ -12,7 +12,7 @@ const removeLinks = text => {
 const removeSpecialChars = text => {
   const re = /[^[^\x00-\x7F]/gi
   asciiText = text.replace(re, '');
-  return asciiText;
+  return asciiText.replace(/\n/g, ' ');
 };
 
 const cleanUpTweetText = text => {
@@ -21,6 +21,10 @@ const cleanUpTweetText = text => {
 };
 
 let i = 0;
+while (cityData.majorCities[i].city !== 'Pleasanton') {
+  i++;
+};
+console.log(i)
 const end = ',2mi&lang=en&result_type=popular&count=100';
 function getTweets() {
   if (!i) fs.writeFileSync('../data/stateTweetData.temp.json', JSON.stringify({}))
@@ -29,6 +33,7 @@ function getTweets() {
   const qString =
     city.latitude.toString() +
     ',' + city.longitude.toString(); 
+  console.log('searching around ', city.city);
   fetch('http://localhost:5555/api/tweets?geocode=' + qString + end, {
     method: 'GET'
   })
@@ -42,7 +47,7 @@ function getTweets() {
       tweetsByState[stateCode] += cleanUpTweetText(text);
       fs.writeFileSync('../data/stateTweetData.temp.json', JSON.stringify(tweetsByState))
     }
-    if (i < 3) {
+    if (i < cityData.majorCities.length) {
       setTimeout(getTweets, 1000);
     } else {
       let recieveFileName = false;
@@ -95,9 +100,9 @@ function renameFile(name) {
     name,
     (err) => {
       if (err) {
-        fs.appendFileSync('../data/log.txt', 'OMG There was an error saving the tweets. Oh NOES. \n' + err);
+        fs.appendFileSync('../data/log.txt', '\nOMG There was an error saving the tweets. Oh NOES. \n' + err);
       } else {
-        fs.appendFileSync('../data/log.txt', 'Made a new US state tweet data file on ' + new Date());
+        fs.appendFileSync('../data/log.txt', '\nMade a new US state tweet data file on ' + new Date());
       }
       console.log('All done.')
       done();

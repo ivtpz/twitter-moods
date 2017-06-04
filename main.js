@@ -2,14 +2,10 @@ var d3 = require('d3');
 
 const shadesInRange = 10;
 
-const fullWidth = 600;
+const pieceWidth = 15;
 
-const canvasWidth = 600;
+const fullHeight = 400;
 
-const canvasHeight = 400;
-
-d3.select('canvas')
-  .attr('style', `width:${canvasWidth}px;height:${canvasHeight}px`)
 
 const scales = [
   {
@@ -53,27 +49,20 @@ let data = colorList.map(c => baseData.map(d => [c, d]))
 
 data = data.reduce((a, d) => a.concat(d), []);
 
-d3.select('#d3root')
-  .attr('style', `width: ${fullWidth}px`)
+d3.select('#mapkey')
+  .attr('style', `width: ${pieceWidth}px; position: absolute; left: 80px; top: 130px;`)
   .selectAll('div')
   .data(data)
   .enter()
   .append('div')
+  .attr('id', (d, j) => (j % shadesInRange) === Math.floor((shadesInRange) / 2) ? 'title-anchor' + Math.floor(j / shadesInRange) : 'key' + j)
   .attr('style', (d, j) => {
     const i = Math.floor(j / shadesInRange); 
     const b = 'background-color: ' + colors[i][d[0]](d[1]);
-    const size = fullWidth / shadesInRange;
-    const w = `width: ${size}px`;
-    const h = `height: ${size}px`
+    const height = fullHeight / shadesInRange / Object.keys(scales).length;
+    const w = `width: ${pieceWidth}px`;
+    const h = `height: ${height}px`
     return [b, w, h].join(';')
   });
 
-  // Plan for mood mapping
-  // take data for a region, ex:
-  const moods = {
-    angry: 0.2,
-    happy: 0.3,
-    pensive: 0.1,
-    love: 0.4
-  };
 

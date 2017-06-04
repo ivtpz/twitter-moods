@@ -12,7 +12,8 @@ const keepItGoing = () => {
   if (i < states.length) {
     runProg();
   } else {
-    fs.appenFile('../data/log.txt', 'Made all the pretty pictures on ' + new Date())
+    fs.appendFileSync('../data/log.txt', 'Made all the pretty pictures on ' + new Date());
+    console.log('All done.')
   }
 }
 
@@ -43,11 +44,11 @@ const runProg = () => {
     PythonShell.run("states.py", options, (err, res) => {
       console.log('err: ', err);
       console.log('res: ', res);
-      i++
+      i++;
       keepItGoing();
     });
   } else {
-    i++
+    i++;
     keepItGoing();
   }
 };

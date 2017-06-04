@@ -14,6 +14,7 @@ exports.stateValues = {
   CT: 'CT',
   CONNECTICUT: 'CT',
   DC: 'DC',
+  "DISTRICT OF COLUMBIA": 'DC',
   DE: 'DE',
   DELAWARE: 'DE',
   FL: 'FL',

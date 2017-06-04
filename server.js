@@ -1,15 +1,14 @@
-"use strict"
 const express = require('express');
 const fetch = require('node-fetch');
 const morgan = require('morgan');
 
 const twitterAuth = require('./config/twitterKey');
 
-function handleTweetData (tweets) {
-  return tweets.statuses.reduce((text, s) => {
+function handleTweetData(tweets) {
+  return tweets.statuses && tweets.statuses.length ? tweets.statuses.reduce((text, s) => {
     text += s.truncated ? s.text.slice(0, -3) : s.text;
     return text + ' ';
-  }, '');
+  }, '') : '';
 }
 
 const app = express();

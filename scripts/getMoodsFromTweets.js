@@ -1,7 +1,8 @@
+#! /usr/bin/env node
+
 const fs = require('fs');
 const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 const watsonAuth = require('../config/watsonKey');
-const cityData = require('../data/majorUSCities');
 const stateTweets = require('../data/stateTweetData.json');
 
 const watsonURL = "https://gateway.watsonplatform.net/tone-analyzer/api";
@@ -26,9 +27,9 @@ const continueAnalyzing = () => {
       '../data/stateSentimentData.json',
       (err) => {
         if (err) {
-          fs.appendFile('../data/log.txt', 'OMG There was an error saving the Sentiment Analysis. Oh NOES. \n' + err);
+          fs.appendFileSync('../data/log.txt', '\nOMG There was an error saving the Sentiment Analysis. Oh NOES.' + err);
         } else {
-          fs.appendFile('../data/log.txt', 'Refreshed US tweet sentiment analysis on ' + new Date())
+          fs.appendFileSync('../data/log.txt', '\nRefreshed US tweet sentiment analysis on ' + new Date())
         }
       }
     )
@@ -37,12 +38,13 @@ const continueAnalyzing = () => {
 
 function analyzeTweets() {
   if (i === 0) fs.writeFileSync('../data/stateSentimentData.temp.json', JSON.stringify({}))
-  const text = stateTweets[states[i]];
+  const text = stateTweets[states[i]].replace(/#(.*?)\s/g, '');
+  console.log("Analyzing " + states[i]);
   tone_analyzer.tone(
     { text, sentences: false },
     function(err, tone) {
       if (err) {
-        fs.appendFile('../data/log.txt', 'Watson shit the bed: \n' + err);
+        fs.appendFileSync('../data/log.txt', 'Watson shit the bed: \n' + err);
       } else {
         const res = JSON.stringify(tone, null, 2)
         const sentiment = require('../data/stateSentimentData.temp.json');
