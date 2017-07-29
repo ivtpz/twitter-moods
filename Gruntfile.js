@@ -17,7 +17,7 @@ module.exports = function(grunt) {
           [
             "babelify",
             {
-              presets: ["es2015", "stage-0"]
+              presets: ["es2015", "react", "stage-0"]
             }
           ]
         ],
@@ -31,7 +31,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          "public/bundle.js": ["main.js*"]
+          "public/bundle2.js": ["public/src/**/*.js*"]
         }
       }
     }
@@ -42,5 +42,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-contrib-watch");
 
   // Default task(s).
-  grunt.registerTask("default", ["browserify"]);
+  grunt.registerTask("default", ["browserify", "watch"]);
 };

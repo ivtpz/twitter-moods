@@ -5,7 +5,7 @@ const ToneAnalyzerV3 = require('watson-developer-cloud/tone-analyzer/v3');
 const watsonAuth = require('../config/watsonKey');
 const stateTweets = require('../data/stateTweetData.json');
 
-const watsonURL = "https://gateway.watsonplatform.net/tone-analyzer/api";
+// const watsonURL = "https://gateway.watsonplatform.net/tone-analyzer/api";
 
 var tone_analyzer = new ToneAnalyzerV3({
   username: watsonAuth.username,
@@ -57,3 +57,4 @@ function analyzeTweets() {
   );
 }
 analyzeTweets();
+
