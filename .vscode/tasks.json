@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "command": "Chrome",
+  "linux": {
+      "command": "google-chrome"
+  },
+  "args": [
+      "${file}"
+  ]
+}

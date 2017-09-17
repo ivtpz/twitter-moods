@@ -1,6 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const morgan = require('morgan');
+const path = require('path');
 
 const twitterAuth = require('./config/twitterKey');
 
@@ -16,7 +17,7 @@ function handleTweetData(tweets) {
 const app = express();
 
 app.use(morgan('dev'));
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static(path.resolve(__dirname, 'public')));
 
 const auth = {
   token: undefined
@@ -29,9 +30,14 @@ app.use('*', (req, res, next) => {
   next();
 });
 
+app.use('/images', (req, res) => {
+  // Couldn't find image, return default image
+  console.log('image request');
+  res.send(path.resolve(__dirname, 'public/images/grey.jpg'));
+});
+
 app.get('/', (req, res) => {
-  // res.sendFile('index.html');
-  res.sendFile('frontPage.html');
+  res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
 // EX: http://localhost:5555/api/tweets?geocode=37.781157,-122.398720,2mi&lang=en&result_type=popular&count=100
@@ -44,7 +50,6 @@ app.get('/api/tweets', (req, res) => {
   searchString = searchString.slice(0, -1);
   const baseUrl = 'https://api.twitter.com';
   const searchUrl = `${baseUrl}/1.1/search/tweets.json?q=&${searchString}`;
-  console.log(searchUrl);
   const searchOptions = {
     method: 'GET',
     headers: {
