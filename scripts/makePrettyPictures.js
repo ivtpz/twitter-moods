@@ -1,30 +1,40 @@
 #! /usr/bin/env node
 
-const PythonShell = require("python-shell");
-const fs = require("fs");
-const sentimentData = require("../data/stateSentimentData.json");
-const imageSizes = require("../data/stateImageSizes.json");
+const PythonShell = require('python-shell');
+const fs = require('fs');
+const sentimentData = require('../data/stateSentimentData.json');
+const imageSizes = require('../data/stateImageSizes.json');
+const { spawnSync, execSync } = require('child_process');
 
 const states = Object.keys(sentimentData);
 let i = 0;
+
+if (!fs.existsSync('../tempImages')) {
+  fs.mkdirSync('../tempImages');
+}
 
 const keepItGoing = () => {
   if (i < states.length) {
     runProg();
   } else {
-    fs.appendFileSync('../data/log.txt', 'Made all the pretty pictures on ' + new Date());
-    console.log('All done.')
+    const date = new Date();
+    const dateString = date.toDateString();
+    fs.appendFileSync('../data/log.txt', `Made all the pretty pictures on ${dateString}`);
+    fs.writeFileSync('../tempImages/updated.json', { updated: dateString });
+    spawnSync('rm', ['-rf', '../public/images']);
+    fs.mkdirSync('../public/images');
+    execSync('mv ../tempImages/* ../public/images/');
+    console.log('All done.');
   }
-}
+};
 
 const runProg = () => {
-
   const watsonData = sentimentData[states[i]].tone_categories[0].tones;
 
   const data = watsonData.reduce((obj, next) => {
-      obj[next.tone_id.slice(0, 1)] = next.score;
-      return obj;
-    }, {});
+    obj[next.tone_id.slice(0, 1)] = next.score;
+    return obj;
+  }, {});
 
   if (data.j && imageSizes[states[i]]) {
     const pictureData = {
@@ -32,16 +42,16 @@ const runProg = () => {
       name: states[i],
       data
     };
-    var options = {
-      mode: "json",
-      pythonPath: "/usr/bin/python3",
-      scriptPath: "./",
+    const options = {
+      mode: 'json',
+      pythonPath: '/usr/bin/python3',
+      scriptPath: './',
       args: JSON.stringify(pictureData)
     };
 
-    console.log("Making image for " + states[i])
+    console.log(`Making image for ${states[i]}`);
 
-    PythonShell.run("states.py", options, (err, res) => {
+    PythonShell.run('states.py', options, (err, res) => {
       console.log('err: ', err);
       console.log('res: ', res);
       i++;
@@ -52,9 +62,7 @@ const runProg = () => {
     keepItGoing();
   }
 };
-runProg()
-
-
+runProg();
 
 // const d = {
 //   size: [75, 122],
@@ -66,5 +74,3 @@ runProg()
 //     s: 0.495613
 //   }
 // };
-
-
