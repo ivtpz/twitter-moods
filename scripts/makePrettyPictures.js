@@ -55,7 +55,7 @@ const runProg = () => {
     };
     const options = {
       mode: 'json',
-      pythonPath: '/usr/bin/python3',
+      pythonPath: '/usr/local/bin/python3',
       scriptPath: './',
       args: JSON.stringify(pictureData)
     };
