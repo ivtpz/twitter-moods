@@ -6,6 +6,9 @@ const sentimentData = require('../data/stateSentimentData.json');
 const imageSizes = require('../data/stateImageSizes.json');
 const { spawnSync, execSync } = require('child_process');
 
+const uploadServer = 'http://localhost:5555';
+const uploadEndpoint = `${uploadServer}/api/images`;
+
 const states = Object.keys(sentimentData);
 let i = 0;
 
@@ -24,6 +27,14 @@ const keepItGoing = () => {
     spawnSync('rm', ['-rf', '../public/images']);
     fs.mkdirSync('../public/images');
     execSync('mv ../tempImages/* ../public/images/');
+    // Upload to AWS S3
+    states.forEach((state) => {
+      const filePath = `public/images/${state}.jpg`;
+      if (fs.existsSync(`../${filePath}`)) {
+        console.log(`requesting to upload ${filePath}`);
+        execSync(`curl -X POST -H "Content-Type: application/json" -d '{"filePath":"${filePath}"}' ${uploadEndpoint}`);
+      }
+    });
     console.log('All done.');
   }
 };
