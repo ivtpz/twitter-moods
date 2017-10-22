@@ -18,12 +18,13 @@ console.log(keyWords);
 fs.writeFileSync(fn, JSON.stringify(keyWords));
 console.log('Wrote the file! ', fn);
 execSync('cp ../data/stateTweetKeywords.json ../public/');
+execSync('curl -X POST -H "Content-Type: application/json" -d \'{"filePath":"data/stateTweetKeywords.json"}\' http://localhost:5555/api/images');
 
 function rankWords(text) {
   const count = {};
   text.split(' ').forEach((word) => {
     if (!ignoredWords[word.toLowerCase()]) {
-      const w = word.replace(/\'(.*)/g, '');
+      const w = word.replace(/'(.*)/g, '');
       count[w] = count[w] || 0;
       count[w]++;
     }
