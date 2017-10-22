@@ -2,8 +2,14 @@ const express = require('express');
 const fetch = require('node-fetch');
 const morgan = require('morgan');
 const path = require('path');
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const bodyParser = require('body-parser');
 
 const twitterAuth = require('./config/twitterKey');
+const awsAuth = require('./config/awsKey');
+
+const { accessKeyId, secretAccessKey, region } = awsAuth;
 
 function handleTweetData(tweets) {
   return tweets.statuses && tweets.statuses.length
@@ -18,6 +24,7 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(express.static(path.resolve(__dirname, 'public')));
+app.use(bodyParser.json());
 
 const auth = {
   token: undefined
@@ -32,7 +39,6 @@ app.use('*', (req, res, next) => {
 
 app.use('/images', (req, res) => {
   // Couldn't find image, return default image
-  console.log('image request');
   res.send(path.resolve(__dirname, 'public/images/grey.jpg'));
 });
 
@@ -90,6 +96,26 @@ app.get('/api/tweets', (req, res) => {
       .then(handleTweetData)
       .then(text => res.status(200).send({ text }));
   }
+});
+
+AWS.config.update({ accessKeyId, secretAccessKey });
+const s3 = new AWS.S3();
+
+app.post('/api/images', (req, res) => {
+  const { filePath } = req.body;
+  const filestream = fs.createReadStream(path.join(__dirname, filePath));
+  filestream.on('error', console.log);
+  s3.upload({
+    Bucket: 'storiesincode.com',
+    Body: filestream,
+    Key: path.basename(filePath)
+  }, (err, data) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.send(`Upload success: ${data.Location}`);
+    }
+  });
 });
 
 app.listen(5555, () => console.log('Listening on port 5555'));
