@@ -15,6 +15,7 @@
   * Run `./makePrettyPictures.js`
   * Reads from `stateSentimentData.json`, and `stateImageSizes.json`
   * Runs python script `states.py` to create images in `../tempImages`
+    * Running this script requires Python3, Pillow and numpy, and a valid path to Python3 in `makePrettyPictures.js`
   * Once all the pictures are made, replace the old `../public/images`
   * Takes ~5 min
 ### Fill in the missing states
