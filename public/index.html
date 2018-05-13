@@ -51,7 +51,7 @@
   <p id="updated"></p>
   <div id="mapkey"></div>
   <svg id="map" width="960" height="660">
-    <defs>
+    <!-- <defs>
       <pattern id="green" x="0" y="0" width="1" height="1">
         <image xlink:href="./images/greens.jpg" width="200" height="200" />
       </pattern>
@@ -65,10 +65,10 @@
       <pattern id="blue" x="0" y="0" width="1" height="1">
         <image xlink:href="./images/blues.jpg" width="200" height="200" />
       </pattern>
-    </defs>
+    </defs> -->
     <defs>
       <pattern id="grey" x="0" y="0" width="1" height="1">
-        <image xlink:href="./images/grey.jpg" width="200" height="200" />
+        <image xlink:href="https://s3.eu-west-2.amazonaws.com/storiesincode.com/grey.jpg" width="200" height="200" />
       </pattern>
     </defs>
   </svg>
@@ -93,12 +93,12 @@
 
     var path = d3.geoPath();
 
-    d3.json("./stateTweetKeywords.json", function (err, keywords) {
+    d3.json("https://s3.eu-west-2.amazonaws.com/storiesincode.com/stateTweetKeywords.json", function (err, keywords) {
       const date = new Date(keywords.updated);
       d3.select('#updated')
         .text(`Last updated ${months[date.getMonth()]} ${date.getDate()} at ${date.getHours()}:${date.getMinutes()}`)
       if (err) throw err;
-      d3.json("./topography/us-quant.json", function (error, us) {
+      d3.json("https://s3.eu-west-2.amazonaws.com/storiesincode.com/us-quant.json", function (error, us) {
         if (error) throw error;
         const states = svg.append("g")
           .attr("class", "states")
@@ -157,7 +157,7 @@
               .attr('width', 1)
               .attr('height', 1)
             pat.append('image')
-              .attr('xlink:href', d => `images/${d.properties.STUSPS}.jpg`)
+              .attr('xlink:href', d => `https://s3.eu-west-2.amazonaws.com/storiesincode.com/${d.properties.STUSPS}.jpg`)
           }
         })
         states.append("path")
